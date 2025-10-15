@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Love Diary - Entries</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@1.3.7/dist/quill.snow.css" rel="stylesheet">
+
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Quicksand',sans-serif; background:linear-gradient(to bottom,#ffe6f0,#fff8fc); overflow-x:hidden;}
+nav {
+  background: linear-gradient(135deg, #ff9ebd, #ffccdc);
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  gap: 15px;
+  flex-wrap: wrap; /* ensures items wrap on smaller screens */
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li a,
+nav ul li button {
+  padding: 10px 25px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  transition: 0.3s;
+  display: inline-block;
+  text-align: center;
+  line-height: 1.2; /* consistent height */
+}
+
+nav ul li a {
+  background: #ff5a91;
+}
+
+nav ul li button {
+  background: #ff367f;
+}
+
+nav ul li a:hover,
+nav ul li button:hover {
+  opacity: 0.85;
+}
+
+nav ul li a:focus,
+nav ul li button:focus {
+  outline: 2px solid #fff; /* improves accessibility */
+  outline-offset: 2px;
+}
+
+  
+  .container{max-width:900px;margin:40px auto;background:#fff8fa;padding:30px;border-radius:25px; box-shadow:0 15px 30px rgba(255,90,145,0.15);}
+  h1{font-family:'Pacifico',cursive;color:#ff3d7f;text-align:center;margin-bottom:20px; font-size:2.5rem;}
+  
+  #editor-container{height:250px; background:#fff; border-radius:15px; box-shadow:0 4px 10px rgba(255,90,145,0.1);}
+  #submitEntry{margin-top:15px; background:#ff3d7f; color:#fff; padding:12px 30px; border:none; border-radius:25px; cursor:pointer; font-weight:bold; font-size:1rem;}
+  
+  .filter-bar{display:flex; gap:15px; justify-content:center; flex-wrap:wrap; margin-top:25px;}
+  .filter-bar input, .filter-bar select{padding:8px 12px; border-radius:12px; border:1px solid #ffccd9; font-size:0.95rem;}
+  
+  .entries-list{margin-top:40px;}
+  .entry-item{background:#fff0f5; padding:20px; margin-bottom:25px; border-radius:20px; box-shadow:0 8px 15px rgba(255,90,145,0.1); position:relative;}
+  .entry-meta{font-size:0.85rem;color:#ff367f;margin-bottom:8px;}
+  .entry-content{font-size:1rem; color:#333;}
+  
+  .entry-actions{position:absolute; top:15px; right:15px; display:flex; gap:10px;}
+  .entry-actions button{padding:5px 10px; border:none; border-radius:12px; cursor:pointer; font-size:0.8rem; transition:0.3s;}
+  .entry-actions .edit{background:#ff8fb3; color:#fff;}
+  .entry-actions .delete{background:#ff3d7f; color:#fff;}
+  .entry-actions button:hover{opacity:0.85;}
+  
+  @media(max-width:600px){
+    nav ul{flex-direction:column; gap:10px;}
+    .filter-bar{flex-direction:column;}
+  }
+</style>
+</head>
+
+<body>
+<nav>
+  <ul>
+    <li><a href="diary.html">Diary</a></li>
+    <li><a href="message.html">Messages</a></li>
+    <li><a href="entries.html">Entries</a></li>
+    <li><button onclick="logout()" style="background-color: #ff0000;">Logout</button></li>
+  </ul>
+</nav>
+
+<div class="container">
+  <h1>Share Your Love 💖</h1>
+  <div id="editor-container"></div>
+  <div style="margin-top:10px;">
+    <label>
+      <input type="checkbox" id="publicEntry"/> Make this entry public
+    </label>
+  </div>
+  <button id="submitEntry">Save Entry</button>
+  
+  <div class="filter-bar">
+    <input type="text" id="searchByName" placeholder="Search by name...">
+    <input type="date" id="startDate">
+    <input type="date" id="endDate">
+    <button onclick="applyFilters()" style="background:#ff8fb3; color:#fff; border:none; padding:8px 15px; border-radius:12px;">Filter</button>
+  </div>
+
+  <div class="entries-list" id="entriesList"></div>
+</div>
+
+<script>
+    const SUPABASE_URL = 'https://fkmrxhrdunhznfwjgchr.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbXJ4aHJkdW5oem5md2pnY2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4NTIwNjksImV4cCI6MjA2ODQyODA2OX0.fiv_0CB1SyaVcHqVq1N3eo7MM1zZePek9ZPr62fTtAE';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUserEmail = '';
+let editingEntryId = null;
+
+// Map emails to display names
+const emailNameMap = {
+  'yadhavsreelakam@gmail.com': 'Kunja',
+  'yadhavsreekanth02@gmail.com': 'Ponnu'
+};
+
+async function checkAuth() {
+  const { data:{ session } } = await supabase.auth.getSession();
+  if(!session || !session.user){
+    window.location.href = 'index.html';
+    return;
+  }
+  currentUserEmail = session.user.email;
+}
+
+async function logout(){
+  await supabase.auth.signOut();
+  window.location.href = 'index.html';
+}
+
+// Initialize Quill
+const quill = new Quill('#editor-container', {
+  theme:'snow',
+  modules: { toolbar:[
+    ['bold','italic','underline','strike'],
+    [{ 'header':[1,2,3,false]}],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'list':'ordered'}, { 'list':'bullet' }],
+    ['link','image','video','audio'],
+    ['clean']
+  ]}
+});
+
+// Load entries
+async function loadEntries(filters={}) {
+  let query = supabase.from('entries').select('*').order('created_at',{ascending:false});
+
+  if(filters.user_name){
+    query = query.ilike('user_email', `%${filters.user_name}%`);
+  }
+  if(filters.startDate){
+    query = query.gte('created_at', filters.startDate);
+  }
+  if(filters.endDate){
+    query = query.lte('created_at', filters.endDate);
+  }
+
+  const { data, error } = await query;
+  const list = document.getElementById('entriesList');
+  list.innerHTML = '';
+  if(error) { list.innerHTML='<p style="color:red;">Failed to load entries.</p>'; return;}
+  if(!data.length){list.innerHTML='<p>No entries found 💌</p>'; return;}
+
+  data.forEach(entry => {
+    const div = document.createElement('div');
+    div.className='entry-item';
+
+    // Map email to name
+    const editorName = emailNameMap[entry.user_email] || 'Someone';
+
+    div.innerHTML = `
+      <div class="entry-meta">By ${editorName} on ${new Date(entry.created_at).toLocaleString()} ${entry.is_public?'🌸 Public':'🌙 Private'}</div>
+      <div class="entry-content">${entry.content}</div>
+      ${(entry.user_email === currentUserEmail) ? `
+        <div class="entry-actions">
+          <button class="edit" onclick='editEntry(${entry.id})'>Edit</button>
+          <button class="delete" onclick='deleteEntry(${entry.id})'>Delete</button>
+        </div>
+      ` : ''}
+    `;
+    list.appendChild(div);
+  });
+}
+
+// Save or update entry
+async function saveEntry(){
+  const content = quill.root.innerHTML.trim();
+  if(!content) return alert('Entry is empty!');
+  const isPublic = document.getElementById('publicEntry').checked;
+
+  // Restrict entry creation to only Kunja or Ponnu emails
+  if(!['yadhavsreelakam@gmail.com','yadhavsreekanth02@gmail.com'].includes(currentUserEmail)){
+    alert('Only Kunja or Ponnu can create entries!');
+    return;
+  }
+
+  if(editingEntryId){
+    await supabase.from('entries').update({content, is_public:isPublic}).eq('id', editingEntryId);
+    editingEntryId = null;
+  } else {
+    await supabase.from('entries').insert([{user_email:currentUserEmail, content, is_public:isPublic}]);
+  }
+
+  quill.setContents([]);
+  document.getElementById('publicEntry').checked = false;
+  loadEntries();
+}
+
+// Edit entry
+async function editEntry(id){
+  const { data } = await supabase.from('entries').select('*').eq('id',id).single();
+  if(!data) return alert('Entry not found!');
+  
+  quill.root.innerHTML = data.content;
+  document.getElementById('publicEntry').checked = data.is_public;
+  editingEntryId = id;
+}
+
+// Delete entry
+async function deleteEntry(id){
+  if(confirm('Are you sure you want to delete this entry?')){
+    await supabase.from('entries').delete().eq('id',id);
+    loadEntries();
+  }
+}
+
+// Apply filters
+function applyFilters(){
+  const name = document.getElementById('searchByName').value.trim();
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  loadEntries({user_name:name, startDate, endDate});
+}
+
+checkAuth().then(()=>loadEntries());
+document.getElementById('submitEntry').addEventListener('click',saveEntry);
+
+</script>
+
+</body>
+</html>

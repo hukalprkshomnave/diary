@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Diary</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%93%96%3C/text%3E%3C/svg%3E">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = 'https://fkmrxhrdunhznfwjgchr.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZrbXJ4aHJkdW5oem5md2pnY2hyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI4NTIwNjksImV4cCI6MjA2ODQyODA2OX0.fiv_0CB1SyaVcHqVq1N3eo7MM1zZePek9ZPr62fTtAE';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || !session.user) {
+        window.location.href = 'index.html';
+      }
+    }
+    checkAuth();
+    async function logout() {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    }
+  </script>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background: linear-gradient(to bottom, #ffd6e8, #fff0f5);
+      overflow-x: hidden;
+    }
+    header {
+      text-align: center;
+      padding: 80px 20px 20px;
+    }
+    header h1 {
+      font-family: 'Pacifico', cursive;
+      font-size: 3.5rem;
+      color: #e91e63;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #e91e63; }
+      to { text-shadow: 0 0 20px #ff4081, 0 0 30px #f48fb1; }
+    }
+
+    .love-letter {
+      text-align: center;
+      max-width: 800px;
+      margin: 30px auto;
+      font-size: 1.2rem;
+      background: #fff;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(255, 64, 129, 0.2);
+    }
+
+    .love-letter h2 {
+      font-family: 'Pacifico', cursive;
+      color: #fbc02d;
+      font-size: 2.1rem;
+      margin-bottom: 10px;
+      font-weight: normal;
+      letter-spacing: 1.5px;
+      border-bottom: 2px solid #ffe082;
+      display: inline-block;
+      background: none;
+      box-shadow: none;
+      padding: 0 0 4px 0;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .gallery img {
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+      object-fit: cover;
+      height: 200px;
+    }
+
+    .gallery img:hover,
+    .gallery video:hover {
+      transform: scale(1.05);
+    }
+
+    .gallery video {
+      width: 100%;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease;
+      object-fit: cover;
+      height: 200px;
+      background: #000;
+      display: block;
+    }
+
+    .countdown {
+      text-align: center;
+      font-size: 1.5rem;
+      margin-top: 40px;
+      color: #d81b60;
+      background: #fff8e1;
+      border: 3px solid #fbc02d;
+      border-radius: 18px;
+      box-shadow: 0 4px 16px rgba(251, 192, 45, 0.12);
+      padding: 24px 0 18px 0;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .slider {
+      margin: 50px auto;
+      max-width: 700px;
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(233, 30, 99, 0.2);
+      text-align: center;
+    }
+
+    .slider p {
+      font-size: 1.3rem;
+      transition: opacity 0.5s;
+    }
+
+    .hearts {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      top: 0;
+      left: 0;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      transform: rotate(45deg);
+      animation: float 6s linear infinite;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: red;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(45deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(45deg);
+        opacity: 0;
+      }
+    }
+
+    .surprise {
+      text-align: center;
+      margin: 60px 0;
+    }
+
+    .btn {
+      padding: 12px 25px;
+      font-size: 1.2rem;
+      border: none;
+      background: #e91e63;
+      color: #fff;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #c2185b;
+    }
+
+    .popup {
+      display: none;
+      position: fixed;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff0f5;
+      border: 2px solid #e91e63;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      z-index: 999;
+    }
+
+    .popup h2 {
+      color: #e91e63;
+      margin-bottom: 10px;
+    }
+    .wish-balloon {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 0;
+      min-width: 80px;
+      max-width: 220px;
+      padding: 12px 22px;
+      background: linear-gradient(135deg, #e53935 60%, #b71c1c 100%);
+      color: #fff;
+      border-radius: 40px 40px 40px 40px / 60px 60px 40px 40px;
+      font-size: 1.1em;
+      box-shadow: 0 4px 16px rgba(233,30,99,0.18);
+      opacity: 0.95;
+      z-index: 10;
+      pointer-events: none;
+      text-align: center;
+      animation: floatBalloon 3.5s linear forwards;
+      transition: opacity 0.5s;
+      word-break: break-word;
+    }
+    @keyframes floatBalloon {
+      0% { bottom: 0; opacity: 0.95; }
+      80% { opacity: 0.95; }
+      100% { bottom: 120vh; opacity: 0; }
+    }
+    html{
+      scroll-behavior: smooth;
+    }
+    /* 🌸 BEAUTIFUL MODERN NAV BAR */
+    nav {
+      background: linear-gradient(to right, #e91e63, #f48fb1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    nav ul {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      list-style: none;
+      padding: 12px 0;
+      gap: 25px;
+      margin: 0;
+    }
+    nav ul li a {
+      text-decoration: none;
+      color: #fff;
+      font-weight: bold;
+      font-size: 1rem;
+      padding: 10px 20px;
+      border-radius: 25px;
+      transition: 0.3s;
+      background: rgba(255, 255, 255, 0.15);
+    }
+    nav ul li a:hover {
+      background: #fff;
+      color: #e91e63;
+      transform: scale(1.05);
+    }
+    nav ul li button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #c2185b;
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    nav ul li button:hover {
+      background: #880e4f;
+      transform: scale(1.05);
+    }
+
+    /* keep rest of your style */
+  </style>
+</head>
+
+<body>
+
+  <!-- 💖 Updated NAV BAR -->
+  <nav>
+    <ul>
+      <li><a href="#boy">Boy</a></li>
+      <li><a href="#girl">Girl</a></li>
+      <li><a href="#wishMakerSection">Wish</a></li>
+      <li><a href="entries.html">Diary Entries</a></li>
+      <li><a href="message.html">Chat Mode</a></li>
+      <li><button onclick="logout()">Logout</button></li>
+    </ul>
+  </nav>
+
+  <!-- 💌 existing page content -->
+  <header>
+    <h1>Our Love Story 💖</h1>
+  </header>
+
+<section class="love-letter">
+  <h2 id="boy"> Boy's view <span style="font-size:1.2em;">💗</span></h2>
+
+ <p>
+    Our first meeting was online. The very first time I saw her, I thought she looked a bit *jada* (a Malayalam term for someone who acts too proud). We were studying in 6th standard back then, in 2021. That year passed without us even speaking once. But I messaged hii and she says that I am the first person who sends a message to her from our school. And My love studied till 1 STD in Little Daffodils School, later she went to aboad and came back in 6 STD <br><br>
+    
+    Then came 2022 — we entered 7th standard. We weren't exactly friends, but we had a playful connection. We would throw chalk pieces at each other just for fun , though it wasn't exactly friendly at the time. She had a short-lived two-way love with someone else, but it ended quickly for various reasons. After that, we started talking more and slowly became good friends. 💬<br><br>
+    
+    One day, I found a funny photo of her — she was plucking plants. I got that photo from my mother’s phone (she’s a teacher), because my love's brother was my mom’s student. On Gandhi Jayanti, all the students were asked to submit a photo of them planting or cleaning something. And there she was in one of those pics. I kept it private but made fun of her with it sometimes. 😄🌿<br><br>
+    
+    In 8th standard, many of her friends left the school, so we got even closer. We went on an excursion together, and I sang many songs for her. It was during that time I started to develop feelings. 💖 I even created a secret language — the cringiest thing ever 😅 — in which “I love you” was translated as “hukalprkshomnave.” I told her that word, and even though she didn’t know what it meant, she said it back to me. I had told one of my friends what it meant, and he told her. Apparently, she cried... I was scared. 😔 But luckily, she wasn’t mad. She just rejected me. Still, I didn’t stop trying — we stayed friends. 🤝<br><br>
+    
+    In 9th standard, we continued being friends. We followed each other on Starmaker and started messaging — not a lot, mostly on WhatsApp using her mom’s phone. Near the end of 9th, a new Starmaker update came with a Truth or Dare feature. We played it and shared many secrets. We trusted each other so much. 💬❤️<br><br>
+    
+    We went on another excursion to Ernakulam. She sat in front of me on the bus, and although she was sleeping, I sang many songs for her. 🎶 There was one more Talrop excursion to Mavoor Village Park too. We became thick friends — super close. Then 10th standard began, and special classes started in April. We kept fighting and teasing each other for fun. I had fallen deeply, madly in love with her. 😍<br><br>
+    
+    Then, on May 5, 2025, she sent me a set of questions. One of them was: "If I kiss you, what will you do — hold me tight or push me away?" I said “hold you tight.” I asked the same question back, and she replied the same. Then she asked (or maybe I asked, I don’t remember) — "What color heart will you give me? ❤️ for love, 💚 for best friend," and I gave her a red heart. She sent one back. When I asked her about our relationship status, she said she wasn’t sure. After a long conversation, she finally confessed she loves me — but that we can only be in a relationship after 10th class ends. I agreed. 💑<br><br>
+    
+    Now, we act like we're already in a relationship. She's really possessive — if I talk to another girl, she gets angry 😡. And yes, I tease her intentionally just to see that reaction. But now… we’re lovers. Even if we’re not officially together yet, we’re more than that. She’s my babyyyy 💕😘
+    </p>
+
+
+    
+</section>
+<section class="gallery">
+  <img src="assets/IMG-20250720-WA0015.jpg">
+  <img src="assets/IMG-20250720-WA0014.jpg">
+  <img src="assets/IMG-20250720-WA0013.jpg">
+  <img src="assets/IMG-20250720-WA0011.jpg">
+  <img src="assets/IMG-20250720-WA0012.jpg">
+  <img src="assets/IMG-20250720-WA0010.jpg">
+  <img src="assets/IMG-20250720-WA0009.jpg">
+  <img src="assets/IMG-20250720-WA0007.jpg">
+  <img src="assets/IMG-20250720-WA0005.jpg">
+  <img src="assets/IMG-20250720-WA0003.jpg">
+  <img src="assets/Screenshot 2025-07-20 105709.png">
+<video src="assets/WhatsApp Video 2025-07-20 at 15.02.18_7971b96a.mp4" controls height="300px"></video>
+<video src="assets/WhatsApp Video 2025-07-20 at 15.02.13_b963051f.mp4" controls height="300px"></video>
+  <!-- Add your real images here -->
+</section>
+<section class="love-letter">
+  <h2 id="girl"> Girl's View <span style="font-size:1.2em;">💗</span></h2>
+
+ <p>
+    Like the K-Dramas I watch, the most unexpected person turned out to be my prince ❤. It all started when we were in 6th standard, during online classes because of COVID. My first class at Little Daffodils School was English. I still remember — Divya Miss was my class teacher. Just as she began introducing me, the power went out at my uncle’s house, so I couldn't even introduce myself. That was our first "meeting", though we had no idea it would someday become a turning point in our lives. 💫<br><br>
+    
+    Since everything was online, we didn’t know each other very well. But he was the first one to message me — a simple “hii” on WhatsApp — and I replied with a sticker 😄. We didn't talk much, only messaging when we needed notes. A whole year passed just like that. In 7th grade, we still didn’t talk much, but we started teasing each other for fun. He was really, really naughty back then 😜. I liked his naughtiness, but only as a friend. He used to playfully hit me and run through the corridors, and I’d run behind him trying to get my revenge 😆. It was all innocent and fun — until another twist arrived. <br><br>
+    
+    A guy from my class proposed to me. I could tell he had feelings, even before he said anything. He eventually gave me love letters and stayed close to me all year. I thought he was "the one", but later realized it was a big mistake. After some issues, I started to hate him. He made my life miserable — he told all the boys in class not to talk to me, and even my closest guy friends stayed away when he was around. I was going through a really tough time 💔. Even when we started talking again, things never got better. That’s when I stopped believing in love. I hated hearing the word when it came to my own life. I couldn’t even listen to romantic songs or watch love stories anymore…<br><br>
+    
+    But everything changed the next year — all because of that one guy who brought back the meaning of love for me. There came my boy 💝, my kuttuchan 💞. In 8th standard, I started noticing him more — the way he looked at me, the way he started developing feelings. ☺ I could sense it. But because of what I'd been through, I couldn’t bring myself to see him as anything more than a friend. <br><br>
+    
+    He even made his own secret language 😅! In that, “I love you” was “hukalprikishomnavae”. Even though I didn’t know the meaning at first, I could feel it — from his tone, his eyes, his smile. And honestly? I loved it. It was so cute and genuine 💗. Later, a friend of ours told me what it meant and asked me if I loved him back. I pretended not to know anything… but after school that day, I saw him sitting in a corner, looking like he was crying. I went up to him and said, “It’s okay, don’t worry,” and asked him if he really loved me — more than 6 times. He nodded every single time 🥹.<br><br>
+    
+    That year became one of the best parts of my life 💖. He sang many songs just for me 🎤, and during our class tour, we grew even closer. Then came 9th standard — we became inseparable. I installed the app “Starmaker” (he already had it), and it brought such a beautiful change in our bond. We shared reels, jokes, voice messages, questions — everything. We really got to know each other deeply. 💌<br><br>
+    
+    In 10th standard, our love story truly began. While playing some fun “get to know each other” questions, one of them was about love. He said “yes”, and I — although hesitant at first — replied the same. I wasn’t sure about my feelings at that moment, but later I realized… I did love him. ❤️<br><br>
+    
+    And then, on 5th May 2025, he asked me: “What’s our relationship status?” I replied, “I don’t know,” but later that day, I opened up. I told him we’d officially start our relationship after 10th. That day… our journey began 🥰.<br><br>
+    
+    Now, I feel like the luckiest girl in the world to have my babyyy. He’s my everything. I honestly can’t imagine a life without him. I love how he cares about the little things 🫶. I know — without a doubt — he’ll be a gentleman and take care of me forever. I wish that we grow together — from school days to our grey-haired days. Love you, my man ❤😘😘😘😘😘😘😘😘😘
+    </p>
+    
+</section>
+<section class="gallery">
+
+<img src="assets/IMG-20250720-WA0006.jpg" height="260px">
+<img src="assets/432580165_18022652792101304_89014404366530581_n.jpg" height="260px">
+<img src="assets/395762106_1277503629577510_7740300040913408335_n.jpg" height="260px" > 
+<img src="assets/395702887_1046528050098544_1174324144224718814_n.jpg" height="260px">
+</section>
+
+<br/>
+
+
+<!-- Wish Maker Section -->
+<div id="wishMakerSection" style="max-height: 150px;max-width: 400px; margin: 2em auto; background: #fff; color: #e91e63; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); padding: 2em; position: relative; overflow: visible;">
+  <h2 style="color:#e91e63;">🎈 Wish Maker 🎈</h2>
+  <form id="wishForm" style="display:flex; gap:0.5em;">
+    <input type="text" id="wishInput" placeholder="Type your wish..." required style="flex:1; padding:8px; border-radius:8px; border:1px solid #e91e63; color:#e91e63;">
+    <button type="submit" style="padding:8px 18px; background:#e91e63; color:#fff; border:none; border-radius:8px; cursor:pointer;">Send</button>
+  </form>
+  <div id="balloonArea" style="position:relative; width:100%; height:220px; pointer-events:none;"></div>
+</div>
+<section class="countdown">
+  <div style="margin-bottom: 10px;">
+    <svg width="40" height="36" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">
+      <path d="M20 33S2 21 2 11.5C2 6.253 6.253 2 11.5 2c3.038 0 5.735 1.64 7.25 4.09C20.765 3.64 23.462 2 26.5 2 31.747 2 36 6.253 36 11.5 36 21 20 33 20 33z" fill="#e91e63" stroke="#fbc02d" stroke-width="2"/>
+    </svg>
+  </div>
+  <p>We've been together for:</p>
+  <p id="timer"></p>
+</section>
+<section class="slider">
+  <p id="quote">You make my heart smile 💘</p>
+</section>
+
+<section class="surprise">
+  <button class="btn" onclick="showSurprise()">Click Me 💝</button>
+</section>
+
+<div class="popup" id="popup">
+  <h2>🌟 Surprise! 🌟</h2>
+  <p>I love you more than words can say.</p>
+</div>
+
+  <!-- 🌹 Secret Language Converter (REPLACE your old block with this) -->
+<section id="secret-language" style="text-align:center; margin:80px auto; background:#fff; max-width:650px; padding:30px; border-radius:20px; box-shadow:0 6px 20px rgba(0,0,0,0.1);">
+  <h2 style="color:#e91e63; font-family:'Pacifico', cursive;">🔐 Secret Language Converter</h2>
+  <p style="color:#555; margin-top:10px;">Type your secret or normal text and see the translation 💌</p>
+
+  <div style="margin-top:20px;">
+    <textarea id="secretInput" placeholder="Type your secret or normal text..." style="width:100%; padding:12px; border-radius:10px; border:1px solid #e91e63; color:#e91e63; font-size:1rem; resize:none; min-height:100px;"></textarea>
+    <div style="margin-top:12px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+      <button id="convertBtn" style="padding:10px 20px; background:#e91e63; color:#fff; border:none; border-radius:25px; cursor:pointer; font-weight:bold;">Convert 💞</button>
+      <button id="clearBtn" style="padding:10px 20px; background:#fff; color:#e91e63; border:2px solid #e91e63; border-radius:25px; cursor:pointer;">Clear</button>
+      <button id="copyBtn" style="padding:10px 20px; background:#f48fb1; color:#fff; border:none; border-radius:25px; cursor:pointer;">Copy Result</button>
+    </div>
+
+    <h3 style="margin-top:25px; color:#e91e63;">Result:</h3>
+    <div id="secretOutput" style="background:#ffe4ef; color:#e91e63; padding:15px; border-radius:10px; min-height:50px; font-size:1.2rem; word-wrap:break-word;"></div>
+  </div>
+</section>
+<script src="script.js"></script>
+
+
+<div class="hearts" id="hearts"></div>
+  <script>
+  // Timer
+  const startDate = new Date("2025-05-05");
+  setInterval(() => {
+    const now = new Date();
+    const diff = now - startDate;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    document.getElementById("timer").innerText = `${days} days`;
+  }, 1000);
+
+  // Quotes slider
+  const quotes = [
+    "You are my sunshine ☀️",
+    "I’m lucky to have you 💕",
+    "Together forever ❤️",
+    "Every moment with you is special 💫",
+    "I love you endlessly 💖"
+  ];
+  let qIndex = 0;
+  setInterval(() => {
+    document.getElementById("quote").innerText = quotes[qIndex];
+    qIndex = (qIndex + 1) % quotes.length;
+  }, 3000);
+
+  // Hearts animation
+  function createHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.animationDuration = 3 + Math.random() * 2 + "s";
+    document.getElementById("hearts").appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+  }
+  setInterval(createHeart, 500);
+
+  // Surprise pop-up
+  function showSurprise() {
+    document.getElementById("popup").style.display = "block";
+    // Remove the button after click
+    document.querySelector(".surprise .btn").style.display = "none";
+    // Auto-hide popup after 3 seconds
+    setTimeout(() => {
+      document.getElementById("popup").style.display = "none";
+    }, 3000);
+  }
+
+  // Hide popup when clicking outside
+  window.addEventListener("click", function(event) {
+    const popup = document.getElementById("popup");
+    if (popup.style.display === "block" && !popup.contains(event.target) && !event.target.classList.contains("btn")) {
+      popup.style.display = "none";
+    }
+  });
+
+  // Bucket List logic
+  const ALLOWED_EMAIL = 'yadhavvsreelakam@gmail.com';
+
+  async function showBucketListIfAllowed() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session && session.user && session.user.email === ALLOWED_EMAIL) {
+      document.getElementById('bucketListSection').style.display = 'block';
+      loadBucketList();
+    }
+  }
+  showBucketListIfAllowed();
+
+  // Load bucket list from Supabase
+  async function loadBucketList() {
+    const listEl = document.getElementById('bucketList');
+    const errorDiv = document.getElementById('bucketError');
+    listEl.innerHTML = '';
+    errorDiv.textContent = '';
+    let { data, error } = await supabase.from('bucket_list').select('*').order('created_at', { ascending: true });
+    if (error) {
+      errorDiv.textContent = 'Failed to load bucket list.';
+      return;
+    }
+    if (data.length === 0) {
+      listEl.innerHTML = '<li style="color:#aaa;">No plans yet. Add one!</li>';
+    } else {
+      data.forEach(item => {
+        const li = document.createElement('li');
+        li.style.display = 'flex';
+        li.style.alignItems = 'center';
+        li.style.gap = '0.7em';
+        // Checkbox
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = !!item.completed;
+        checkbox.style.transform = 'scale(1.3)';
+        checkbox.onclick = async () => {
+          await supabase.from('bucket_list').update({ completed: checkbox.checked }).eq('id', item.id);
+          liText.style.textDecoration = checkbox.checked ? 'line-through' : 'none';
+          liText.style.color = checkbox.checked ? '#aaa' : '#e91e63';
+        };
+        li.appendChild(checkbox);
+        // Text
+        const liText = document.createElement('span');
+        liText.textContent = item.item;
+        liText.style.flex = '1';
+        liText.style.color = item.completed ? '#aaa' : '#e91e63';
+        liText.style.textDecoration = item.completed ? 'line-through' : 'none';
+        li.appendChild(liText);
+        // Delete button
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '🗑️';
+        delBtn.title = 'Delete';
+        delBtn.style.background = 'none';
+        delBtn.style.border = 'none';
+        delBtn.style.cursor = 'pointer';
+        delBtn.style.fontSize = '1.2em';
+        delBtn.onclick = async () => {
+          await supabase.from('bucket_list').delete().eq('id', item.id);
+          loadBucketList();
+        };
+        li.appendChild(delBtn);
+        listEl.appendChild(li);
+      });
+    }
+  }
+
+  // Add new bucket list item
+  document.getElementById('addBucketForm').onsubmit = async function(e) {
+    e.preventDefault();
+    const input = document.getElementById('bucketInput');
+    const errorDiv = document.getElementById('bucketError');
+    errorDiv.textContent = '';
+    const item = input.value.trim();
+    if (!item) return;
+    const { error } = await supabase.from('bucket_list').insert([{ item, completed: false }]);
+    if (error) {
+      errorDiv.textContent = 'Failed to add item.';
+      return;
+    }
+    input.value = '';
+    loadBucketList();
+  };
+
+  // Wish Maker logic
+  document.getElementById('wishForm').onsubmit = function(e) {
+    e.preventDefault();
+    const input = document.getElementById('wishInput');
+    const balloonArea = document.getElementById('balloonArea');
+    const wish = input.value.trim();
+    if (!wish) return;
+    // Create balloon
+    const balloon = document.createElement('div');
+    balloon.className = 'wish-balloon';
+    balloon.textContent = wish;
+    // Randomize horizontal position a bit
+    balloon.style.left = (30 + Math.random()*40) + '%';
+    balloonArea.appendChild(balloon);
+    // Remove after animation
+    setTimeout(() => balloon.remove(), 3500);
+    input.value = '';
+  };
+</script>
+
+
+</body>
+</html>
