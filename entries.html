@@ -95,8 +95,7 @@ nav ul li button:focus {
 <nav>
   <ul>
     <li><a href="diary.html">Diary</a></li>
-    <li><a href="message.html">Messages</a></li>
-    <li><a href="entries.html">Entries</a></li>
+    <li><a href="#entriesList">Entries</a></li>
     <li><button onclick="logout()" style="background-color: #ff0000;">Logout</button></li>
   </ul>
 </nav>
@@ -105,9 +104,7 @@ nav ul li button:focus {
   <h1>Share Your Love 💖</h1>
   <div id="editor-container"></div>
   <div style="margin-top:10px;">
-    <label>
-      <input type="checkbox" id="publicEntry"/> Make this entry public
-    </label>
+
   </div>
   <button id="submitEntry">Save Entry</button>
   
@@ -131,7 +128,7 @@ let editingEntryId = null;
 
 // Map emails to display names
 const emailNameMap = {
-  'yadhavsreelakam@gmail.com': 'Kunja',
+  'yadhavvsreelakam@gmail.com': 'Kunja',
   'yadhavsreekanth02@gmail.com': 'Ponnu'
 };
 
@@ -210,7 +207,7 @@ async function saveEntry(){
   const isPublic = document.getElementById('publicEntry').checked;
 
   // Restrict entry creation to only Kunja or Ponnu emails
-  if(!['yadhavsreelakam@gmail.com','yadhavsreekanth02@gmail.com'].includes(currentUserEmail)){
+  if(!['yadhavvsreelakam@gmail.com','yadhavsreekanth02@gmail.com'].includes(currentUserEmail)){
     alert('Only Kunja or Ponnu can create entries!');
     return;
   }

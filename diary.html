@@ -312,7 +312,12 @@
       <li><a href="#girl">Girl</a></li>
       <li><a href="#wishMakerSection">Wish</a></li>
       <li><a href="entries.html">Diary Entries</a></li>
-      <li><a href="message.html">Chat Mode</a></li>
+      <li id="birthdayLinkContainer">
+  <a href="message.html" id="birthdayLink" style="color:#edeaea; pointer-events:none; opacity:0.7; cursor: not-allowed;">
+    🔒 Birthday
+  </a>
+</li>
+
       <li><button onclick="logout()">Logout</button></li>
     </ul>
   </nav>
@@ -347,17 +352,17 @@
     
 </section>
 <section class="gallery">
-  <img src="assets/IMG-20250720-WA0015.jpg">
-  <img src="assets/IMG-20250720-WA0014.jpg">
-  <img src="assets/IMG-20250720-WA0013.jpg">
-  <img src="assets/IMG-20250720-WA0011.jpg">
-  <img src="assets/IMG-20250720-WA0012.jpg">
-  <img src="assets/IMG-20250720-WA0010.jpg">
-  <img src="assets/IMG-20250720-WA0009.jpg">
-  <img src="assets/IMG-20250720-WA0007.jpg">
-  <img src="assets/IMG-20250720-WA0005.jpg">
-  <img src="assets/IMG-20250720-WA0003.jpg">
-  <img src="assets/Screenshot 2025-07-20 105709.png">
+  <img src="assets/IMG-20250720-WA0015.jpg"/>
+  <img src="assets/IMG-20250720-WA0014.jpg"/>
+  <img src="assets/IMG-20250720-WA0013.jpg"/>
+  <img src="assets/IMG-20250720-WA0011.jpg"/>
+  <img src="assets/IMG-20250720-WA0012.jpg"/>
+  <img src="assets/IMG-20250720-WA0010.jpg"/>
+  <img src="assets/IMG-20250720-WA0009.jpg"/>
+  <img src="assets/IMG-20250720-WA0007.jpg"/>
+  <img src="assets/IMG-20250720-WA0005.jpg"/>
+  <img src="assets/IMG-20250720-WA0003.jpg"/>
+  <img src="assets/Screenshot 2025-07-20 105709.png"/>
 <video src="assets/WhatsApp Video 2025-07-20 at 15.02.18_7971b96a.mp4" controls height="300px"></video>
 <video src="assets/WhatsApp Video 2025-07-20 at 15.02.13_b963051f.mp4" controls height="300px"></video>
   <!-- Add your real images here -->
@@ -388,24 +393,160 @@
 </section>
 <section class="gallery">
 
-<img src="assets/IMG-20250720-WA0006.jpg" height="260px">
-<img src="assets/432580165_18022652792101304_89014404366530581_n.jpg" height="260px">
-<img src="assets/395762106_1277503629577510_7740300040913408335_n.jpg" height="260px" > 
-<img src="assets/395702887_1046528050098544_1174324144224718814_n.jpg" height="260px">
+<img src="assets/IMG-20250720-WA0006.jpg" height="260px"/>
+<img src="assets/432580165_18022652792101304_89014404366530581_n.jpg" height="260px"/>
+<img src="assets/395762106_1277503629577510_7740300040913408335_n.jpg" height="260px" /> 
+<img src="assets/395702887_1046528050098544_1174324144224718814_n.jpg" height="260px"/>
 </section>
 
 <br/>
 
 
-<!-- Wish Maker Section -->
-<div id="wishMakerSection" style="max-height: 150px;max-width: 400px; margin: 2em auto; background: #fff; color: #e91e63; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); padding: 2em; position: relative; overflow: visible;">
-  <h2 style="color:#e91e63;">🎈 Wish Maker 🎈</h2>
-  <form id="wishForm" style="display:flex; gap:0.5em;">
+<div id="wishMakerSection" style="max-width: 400px; margin: 2em auto; background: #fff; color: #e91e63; border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.2); padding: 2em; position: relative; overflow: hidden;">
+  <h2 style="color:#e91e63; text-align:center;">🎈 Wish Maker 🎈</h2>
+  <form id="wishForm" style="display:flex; gap:0.5em; margin-bottom:1em;">
     <input type="text" id="wishInput" placeholder="Type your wish..." required style="flex:1; padding:8px; border-radius:8px; border:1px solid #e91e63; color:#e91e63;">
     <button type="submit" style="padding:8px 18px; background:#e91e63; color:#fff; border:none; border-radius:8px; cursor:pointer;">Send</button>
   </form>
-  <div id="balloonArea" style="position:relative; width:100%; height:220px; pointer-events:none;"></div>
+  <div id="balloonArea" style="position:relative; width:100%; height:100%;"></div>
 </div>
+
+<style>
+.wish-balloon {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  min-width: 80px;
+  max-width: 220px;
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #e53935 60%, #b71c1c 100%);
+  color: #fff;
+  border-radius: 40px 40px 40px 40px / 60px 60px 40px 40px;
+  font-size: 1.1em;
+  box-shadow: 0 4px 16px rgba(233,30,99,0.18);
+  opacity: 0.95;
+  pointer-events: none;
+  text-align: center;
+  animation: floatBalloon 3.5s linear forwards;
+  word-break: break-word;
+}
+
+@keyframes floatBalloon {
+  0% { bottom: 0; opacity: 1; transform: translateX(-50%) scale(0.8); }
+  50% { transform: translateX(-50%) scale(1.1); }
+  100% { bottom: 300px; opacity: 0; transform: translateX(-50%) scale(1); }
+}
+
+.mini-heart {
+  position: absolute;
+  font-size: 1.2em;
+  color: #ff4081;
+  pointer-events: none;
+  animation: floatHeart 3s linear forwards;
+}
+
+@keyframes floatHeart {
+  0% { transform: translateY(0) scale(0.5); opacity:1; }
+  50% { transform: translateY(-50px) scale(1); opacity:0.8; }
+  100% { transform: translateY(-150px) scale(0.8); opacity:0; }
+}
+
+.big-heart {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%) scale(0);
+  font-size: 3em;
+  color: #ff4081;
+  text-align: center;
+  pointer-events: none;
+  animation: popHeart 1s forwards;
+}
+
+@keyframes popHeart {
+  0% { transform: translate(-50%,-50%) scale(0); opacity:0; }
+  50% { transform: translate(-50%,-50%) scale(1.5); opacity:1; }
+  100% { transform: translate(-50%,-50%) scale(1); opacity:1; }
+}
+
+.confetti {
+  position: absolute;
+  width: 8px;
+  height: 12px;
+  background-color: red;
+  opacity: 0.9;
+  pointer-events: none;
+  transform: rotate(45deg);
+  animation: fall 2s linear forwards;
+}
+
+@keyframes fall {
+  0% { transform: translateY(0) rotate(0deg); opacity:1; }
+  100% { transform: translateY(300px) rotate(720deg); opacity:0; }
+}
+</style>
+
+<script>
+const wishForm = document.getElementById("wishForm");
+const wishInput = document.getElementById("wishInput");
+const balloonArea = document.getElementById("balloonArea");
+
+function randomColor() {
+  const colors = ['#f44336','#e91e63','#9c27b0','#3f51b5','#2196f3','#4caf50','#ffeb3b','#ff9800'];
+  return colors[Math.floor(Math.random()*colors.length)];
+}
+
+wishForm.addEventListener("submit", function(e){
+  e.preventDefault();
+  const wish = wishInput.value.trim();
+  if(!wish) return;
+
+  // 🎈 Balloon
+  const balloon = document.createElement("div");
+  balloon.className = "wish-balloon";
+  balloon.textContent = wish;
+  balloon.style.left = (30 + Math.random()*40) + "%";
+  balloonArea.appendChild(balloon);
+  setTimeout(()=>balloon.remove(), 3500);
+
+  // ❤️ Big Heart
+  const bigHeart = document.createElement("div");
+  bigHeart.className = "big-heart";
+  bigHeart.innerHTML = "❤️";
+  balloonArea.appendChild(bigHeart);
+  setTimeout(()=>bigHeart.remove(), 1500);
+
+  // 💖 Mini hearts
+  for(let i=0;i<15;i++){
+    const heart = document.createElement("div");
+    heart.className = "mini-heart";
+    heart.textContent = "💖";
+    heart.style.left = Math.random()*90 + "%";
+    heart.style.bottom = "0px";
+    balloonArea.appendChild(heart);
+    setTimeout(()=>heart.remove(), 3000);
+  }
+
+  // 🎉 Confetti
+  for(let i=0;i<30;i++){
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = Math.random()*100 + "%";
+    confetti.style.backgroundColor = randomColor();
+    balloonArea.appendChild(confetti);
+    setTimeout(()=>confetti.remove(), 2000);
+  }
+
+  wishInput.value = "";
+});
+</script>
+
+
+
+
+
+
 <section class="countdown">
   <div style="margin-bottom: 10px;">
     <svg width="40" height="36" viewBox="0 0 40 36" fill="none" xmlns="http://www.w3.org/2000/svg" style="display:block;margin:0 auto;">
@@ -447,8 +588,6 @@
 </section>
 <script src="script.js"></script>
 
-
-<div class="hearts" id="hearts"></div>
   <script>
   // Timer
   const startDate = new Date("2025-05-05");
@@ -502,18 +641,6 @@
       popup.style.display = "none";
     }
   });
-
-  // Bucket List logic
-  const ALLOWED_EMAIL = 'yadhavvsreelakam@gmail.com';
-
-  async function showBucketListIfAllowed() {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session && session.user && session.user.email === ALLOWED_EMAIL) {
-      document.getElementById('bucketListSection').style.display = 'block';
-      loadBucketList();
-    }
-  }
-  showBucketListIfAllowed();
 
   // Load bucket list from Supabase
   async function loadBucketList() {
@@ -569,23 +696,6 @@
       });
     }
   }
-
-  // Add new bucket list item
-  document.getElementById('addBucketForm').onsubmit = async function(e) {
-    e.preventDefault();
-    const input = document.getElementById('bucketInput');
-    const errorDiv = document.getElementById('bucketError');
-    errorDiv.textContent = '';
-    const item = input.value.trim();
-    if (!item) return;
-    const { error } = await supabase.from('bucket_list').insert([{ item, completed: false }]);
-    if (error) {
-      errorDiv.textContent = 'Failed to add item.';
-      return;
-    }
-    input.value = '';
-    loadBucketList();
-  };
 
   // Wish Maker logic
   document.getElementById('wishForm').onsubmit = function(e) {
